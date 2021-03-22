@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://katifrantz.com/favicon.ico">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <title>Browser caching</title>
+</head>
+<body>
+    <div class="w-full">
+        <nav class="w-full h-16 bg-purple-900">
+            <div class="max-w-6xl px-12 md:px-0 h-full flex justify-between items-center mx-auto">
+                <a href="/" class="text-white text-2xl font-bold">
+                    Strapi Conf
+                </a>
+
+                <div>
+                    <a class="text-white mr-2" href="">Logout</a>
+                </div>
+            </div>
+        </nav>
+
+        <h1 class="text-center text-5xl my-16">Team Members</h1>
+
+        <section class='max-w-6xl mx-auto grid grid-cols-4 gap-4'>
+            <div class="w-full bg-gray-100 rounded h-96"></div>
+            <div class="w-full bg-gray-100 rounded h-96"></div>
+            <div class="w-full bg-gray-100 rounded h-96"></div>
+            <div class="w-full bg-gray-100 rounded h-96"></div>
+        </section>
+    </div>
+
+    <script>
+        async function fetchTeamMembers() {
+            const request = new Request('https://randomuser.me/api/?results=50')
+
+            const cachedMembers = await caches.match(request)
+
+            if (cachedMembers) {
+                return cachedMembers
+            }
+
+            const cache = await caches.open('members')
+
+            await cache.add(request)
+
+            return cache.match(request)
+        }
+
+        fetchTeamMembers()
+            .then(response => response.json())
+            .then(members => console.table(members.results))
+    </script>
+</body>
+</html>
